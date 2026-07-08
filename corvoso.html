@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corvoso Technologies | Coming Soon</title>
+    <meta name="description" content="Corvoso Technologies Pvt Ltd - Building modern software solutions, AI products and digital experiences.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config for Dark Mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            fuchsia: '#d946ef',
+                            violet: '#8b5cf6',
+                            pink: '#ec4899',
+                            dark: '#0a0a0a',
+                            light: '#fdfdfd'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1.2s ease-out forwards',
+                        'slide-up': 'slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer components {
+            .btn-primary {
+                @apply relative overflow-hidden inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300;
+                @apply bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+            }
+            .btn-secondary {
+                @apply inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-medium transition-all duration-300;
+                @apply text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10;
+            }
+            .countdown-block {
+                @apply flex flex-col items-center justify-center p-2 sm:p-4 min-w-[50px] sm:min-w-[80px];
+            }
+            .countdown-value {
+                @apply font-outfit text-2xl sm:text-3xl md:text-5xl font-light text-zinc-900 dark:text-white mb-1 tracking-tight;
+            }
+            .countdown-label {
+                @apply text-[9px] sm:text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest;
+            }
+            .gradient-text {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-violet via-brand-fuchsia to-brand-pink;
+            }
+        }
+
+        /* Minimalist noise texture overlay for extreme premium feel */
+        .noise-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="bg-brand-light dark:bg-brand-dark text-zinc-900 dark:text-zinc-100 font-sans antialiased selection:bg-brand-fuchsia/30 selection:text-zinc-900 dark:selection:text-white transition-colors duration-700">
+
+    <div class="noise-bg"></div>
+
+    <!-- Background Elements (Orbs & 3D Interactive Canvas) -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-violet/10 dark:bg-brand-violet/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-pink/10 dark:bg-brand-pink/20 blur-[120px]"></div>
+        <!-- 3D Interactive WebGL Canvas -->
+        <canvas id="webgl-canvas" class="absolute inset-0 w-full h-full opacity-40 mix-blend-multiply dark:mix-blend-screen"></canvas>
+    </div>
+
+    <!-- Minimalist Navbar -->
+    <nav class="fixed top-0 w-full z-40 border-b border-zinc-200/50 dark:border-white/5 bg-white/50 dark:bg-black/50 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Company Logo -->
+                <img src="./logo2.png" alt="Corvoso Logo" class="h-6 sm:h-8 w-auto block dark:hidden hover:scale-105 transition-transform duration-300" />
+                <img src="./logo1.png" alt="Corvoso Logo" class="h-6 sm:h-8 w-auto hidden dark:block hover:scale-105 transition-transform duration-300" />
+                <span class="font-outfit font-semibold tracking-wide text-sm sm:text-base text-zinc-900 dark:text-white">Corvoso Technologies</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors text-zinc-600 dark:text-zinc-400" aria-label="Toggle Theme">
+                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Random Quotes Toast -->
+    <div id="quote-toast" class="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-[280px] p-4 sm:p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-black/90 backdrop-blur-xl shadow-2xl z-50 transition-all duration-1000 opacity-0 translate-y-4 pointer-events-none">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-brand-fuchsia opacity-50 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+        <p class="text-[11px] sm:text-xs font-sans text-zinc-600 dark:text-zinc-300 italic mb-2 sm:mb-3 leading-relaxed" id="quote-text"></p>
+        <p class="text-[9px] sm:text-[10px] font-bold text-brand-violet uppercase tracking-widest" id="quote-author"></p>
+    </div>
+
+    <main class="relative z-10 w-full">
+        
+        <!-- Hero Section -->
+        <section class="flex flex-col items-center justify-center min-h-[90vh] md:min-h-screen px-4 sm:px-6 pt-24 pb-12">
+            <div class="w-full max-w-4xl mx-auto text-center flex flex-col items-center">
+                
+                <!-- Minimalist Pill -->
+                <div class="animate-slide-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-black/70 backdrop-blur-md mb-6 sm:mb-8">
+                    <span class="w-2 h-2 rounded-full bg-brand-violet animate-pulse"></span>
+                    <span class="text-[10px] sm:text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Launching 2026</span>
+                </div>
+                
+                <!-- Hero Typography -->
+                <h1 class="animate-slide-up [animation-delay:100ms] opacity-0 font-outfit text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-tight mb-4 sm:mb-6 text-zinc-900 dark:text-white">
+                    Corvoso <br/>
+                    <span class="gradient-text font-medium">Technologies Pvt Ltd</span>
+                </h1>
+                
+                <p class="animate-slide-up [animation-delay:200ms] opacity-0 max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-zinc-500 dark:text-zinc-400 font-light leading-relaxed mb-10 sm:mb-16">
+                    We are crafting premium software solutions, AI-powered products, modern web experiences, and scalable business applications.
+                    <br class="hidden sm:block"><br class="hidden sm:block">
+                    Something extraordinary is on the way.
+                </p>
+
+                <!-- Countdown Timer -->
+                <div class="animate-slide-up [animation-delay:300ms] opacity-0 flex justify-center gap-1 sm:gap-6 mb-12 sm:mb-16 border-y border-zinc-200 dark:border-zinc-800 py-4 sm:py-6 w-full max-w-2xl mx-auto relative bg-white/10 dark:bg-black/10 backdrop-blur-sm overflow-hidden">
+                    <!-- Decorative lines for minimal look -->
+                    <div class="hidden sm:block absolute left-0 top-1/2 w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800"></div>
+                    <div class="hidden sm:block absolute right-0 top-1/2 w-8 h-[1px] bg-zinc-200 dark:bg-zinc-800"></div>
+
+                    <div class="countdown-block">
+                        <div id="cd-days" class="countdown-value">00</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="text-zinc-300 dark:text-zinc-700 font-light text-2xl sm:text-4xl mt-1 sm:mt-2">:</div>
+                    <div class="countdown-block">
+                        <div id="cd-hours" class="countdown-value">00</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="text-zinc-300 dark:text-zinc-700 font-light text-2xl sm:text-4xl mt-1 sm:mt-2">:</div>
+                    <div class="countdown-block">
+                        <div id="cd-minutes" class="countdown-value">00</div>
+                        <div class="countdown-label">Mins</div>
+                    </div>
+                    <div class="text-zinc-300 dark:text-zinc-700 font-light text-2xl sm:text-4xl mt-1 sm:mt-2">:</div>
+                    <div class="countdown-block">
+                        <div id="cd-seconds" class="countdown-value gradient-text">00</div>
+                        <div class="countdown-label">Secs</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="animate-slide-up [animation-delay:400ms] opacity-0 flex flex-col sm:flex-row justify-center items-center gap-4 w-full sm:w-auto px-4 sm:px-0">
+                    <a href="#" class="btn-primary group w-full sm:w-auto">
+                        <span>Explore Platform</span>
+                        <svg class="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                    <a href="mailto:hello@corvosotech.com" class="btn-secondary w-full sm:w-auto border border-zinc-200 dark:border-zinc-800 sm:border-0">
+                        Contact Sales
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Manifesto Section -->
+        <section class="w-full max-w-4xl mx-auto px-6 py-20 md:py-32 overflow-hidden">
+            <div class="flex flex-col gap-8 sm:gap-10 md:gap-16 text-center md:text-left">
+                <h2 class="text-3xl sm:text-5xl md:text-7xl font-outfit font-black tracking-tighter text-zinc-900 dark:text-white reveal">
+                    Software should be <br class="md:hidden"><span class="gradient-text">lightning fast.</span>
+                </h2>
+                <h2 class="text-3xl sm:text-5xl md:text-7xl font-outfit font-black tracking-tighter text-zinc-900 dark:text-white md:pl-16 reveal" style="transition-delay: 150ms;">
+                    AI should be <br class="md:hidden"><span class="gradient-text">invisible.</span>
+                </h2>
+                <h2 class="text-3xl sm:text-5xl md:text-7xl font-outfit font-black tracking-tighter text-zinc-900 dark:text-white md:pl-32 reveal" style="transition-delay: 300ms;">
+                    Design should be <br class="md:hidden"><span class="gradient-text">effortless.</span>
+                </h2>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="w-full max-w-5xl mx-auto px-6 py-16 md:py-24 border-t border-zinc-200/50 dark:border-white/5">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-outfit font-bold text-zinc-900 dark:text-white mb-3 sm:mb-4">What We're Building</h2>
+                <p class="text-sm sm:text-base text-zinc-500 dark:text-zinc-400 font-light">Next-generation solutions for ambitious enterprises.</p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="p-6 sm:p-8 rounded-2xl bg-white/70 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 backdrop-blur-md transition-all duration-300 hover:border-brand-violet/50 hover:shadow-lg hover:shadow-brand-violet/5 hover:-translate-y-1 reveal">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-brand-violet/10 text-brand-violet flex items-center justify-center mb-4 sm:mb-6">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold font-outfit text-zinc-900 dark:text-white mb-2 sm:mb-3">Custom Software</h3>
+                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">Scalable, secure, and lightning-fast enterprise architectures designed to handle millions of requests.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="p-6 sm:p-8 rounded-2xl bg-white/70 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 backdrop-blur-md transition-all duration-300 hover:border-brand-fuchsia/50 hover:shadow-lg hover:shadow-brand-fuchsia/5 hover:-translate-y-1 reveal" style="transition-delay: 150ms;">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-brand-fuchsia/10 text-brand-fuchsia flex items-center justify-center mb-4 sm:mb-6">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold font-outfit text-zinc-900 dark:text-white mb-2 sm:mb-3">AI Infrastructure</h3>
+                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">Embedding intelligent agents and predictive analytics natively into business workflows to automate tasks.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="p-6 sm:p-8 rounded-2xl bg-white/70 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 backdrop-blur-md transition-all duration-300 hover:border-brand-pink/50 hover:shadow-lg hover:shadow-brand-pink/5 hover:-translate-y-1 reveal sm:col-span-2 md:col-span-1" style="transition-delay: 300ms;">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-brand-pink/10 text-brand-pink flex items-center justify-center mb-4 sm:mb-6">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold font-outfit text-zinc-900 dark:text-white mb-2 sm:mb-3">Premium UI/UX</h3>
+                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">Crafting hyper-optimized frontends that look stunning and feel incredibly responsive like native applications.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Terminal Section -->
+        <section class="w-full max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+            <div class="rounded-xl sm:rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-black/40 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] reveal">
+                <!-- Terminal Header -->
+                <div class="flex items-center px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-100/50 dark:bg-white/5">
+                    <div class="flex space-x-1.5 sm:space-x-2 absolute">
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f56]"></div>
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ffbd2e]"></div>
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27c93f]"></div>
+                    </div>
+                    <div class="mx-auto text-[10px] sm:text-[11px] font-mono font-medium text-zinc-400 dark:text-zinc-500">corvoso_agent.py</div>
+                </div>
+                <!-- Terminal Body -->
+                <div class="p-4 sm:p-6 md:p-8 font-mono text-xs sm:text-sm md:text-base leading-relaxed text-zinc-800 dark:text-zinc-300 min-h-[200px] sm:min-h-[300px] overflow-x-auto whitespace-pre-wrap break-words" id="terminal-body">
+                    <!-- JS injects typed code here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section class="w-full max-w-5xl mx-auto px-6 pb-16 md:pb-24">
+            <div class="text-center mb-8 md:mb-10">
+                <p class="text-xs sm:text-sm font-semibold text-zinc-400 uppercase tracking-widest mb-6 reveal">Powered By Modern Tech</p>
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3 reveal" style="transition-delay: 150ms;">
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">Python</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">Django</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">FastAPI</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">React</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">Next.js</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">Tailwind CSS</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">PostgreSQL</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">Docker</span>
+                    <span class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-full bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-sm cursor-default hover:border-zinc-400 transition-colors">AWS</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="w-full max-w-3xl mx-auto px-6 py-16 md:py-24 border-t border-zinc-200/50 dark:border-white/5">
+            <div class="text-center mb-10 md:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-outfit font-bold text-zinc-900 dark:text-white mb-4 reveal">Frequently Asked Questions</h2>
+            </div>
+            
+            <div class="flex flex-col gap-3 sm:gap-4 reveal" style="transition-delay: 150ms;">
+                <!-- FAQ Item 1 -->
+                <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md overflow-hidden transition-all duration-300">
+                    <button class="faq-btn w-full px-5 py-4 sm:px-6 sm:py-5 flex items-center justify-between text-left focus:outline-none group">
+                        <span class="text-sm sm:text-base font-medium text-zinc-900 dark:text-white group-hover:text-brand-fuchsia transition-colors pr-4">When is the official launch?</span>
+                        <svg class="faq-icon w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out px-5 sm:px-6">
+                        <p class="pb-4 sm:pb-5 text-xs sm:text-sm font-light text-zinc-500 dark:text-zinc-400 leading-relaxed">We are currently in private beta and expect to open early access to our platform in Q4 2026. Keep an eye on the countdown timer!</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md overflow-hidden transition-all duration-300">
+                    <button class="faq-btn w-full px-5 py-4 sm:px-6 sm:py-5 flex items-center justify-between text-left focus:outline-none group">
+                        <span class="text-sm sm:text-base font-medium text-zinc-900 dark:text-white group-hover:text-brand-fuchsia transition-colors pr-4">Are you taking on custom enterprise projects?</span>
+                        <svg class="faq-icon w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out px-5 sm:px-6">
+                        <p class="pb-4 sm:pb-5 text-xs sm:text-sm font-light text-zinc-500 dark:text-zinc-400 leading-relaxed">Yes, on a very selective basis. If you have a highly complex, scalable architecture requirement, please reach out via our contact email to discuss potential collaborations.</p>
+                    </div>
+                </div>
+                <!-- FAQ Item 3 -->
+                <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md overflow-hidden transition-all duration-300">
+                    <button class="faq-btn w-full px-5 py-4 sm:px-6 sm:py-5 flex items-center justify-between text-left focus:outline-none group">
+                        <span class="text-sm sm:text-base font-medium text-zinc-900 dark:text-white group-hover:text-brand-fuchsia transition-colors pr-4">What technology stack do you specialize in?</span>
+                        <svg class="faq-icon w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out px-5 sm:px-6">
+                        <p class="pb-4 sm:pb-5 text-xs sm:text-sm font-light text-zinc-500 dark:text-zinc-400 leading-relaxed">Our core stack consists of Python (FastAPI/Django) on the backend, React and Next.js on the frontend, and AWS infrastructure powered by modern Large Language Models.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="relative w-full z-10 p-6 sm:p-8 border-t border-zinc-200/50 dark:border-white/5 text-center text-[10px] sm:text-xs text-zinc-400 dark:text-zinc-600 bg-white/50 dark:bg-black/50 backdrop-blur-md">
+        © 2026 Corvoso Technologies Pvt Ltd. All rights reserved.
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Dark/Light Theme Toggle Logic
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const themeIconLight = document.getElementById('theme-icon-light');
+
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeIconLight.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIconDark.classList.remove('hidden');
+            }
+
+            themeToggleBtn.addEventListener('click', function() {
+                themeIconDark.classList.toggle('hidden');
+                themeIconLight.classList.toggle('hidden');
+
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+            });
+
+            // 2. Scroll Reveal Observer
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+            // 3. Live Countdown Timer
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 30);
+            targetDate.setHours(10, 0, 0, 0);
+
+            function updateCountdown() {
+                const now = new Date();
+                const diff = targetDate - now;
+
+                if (diff <= 0) return;
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / 1000 / 60) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                const elDays = document.getElementById('cd-days');
+                if(elDays) {
+                    elDays.innerText = days.toString().padStart(2, '0');
+                    document.getElementById('cd-hours').innerText = hours.toString().padStart(2, '0');
+                    document.getElementById('cd-minutes').innerText = minutes.toString().padStart(2, '0');
+                    document.getElementById('cd-seconds').innerText = seconds.toString().padStart(2, '0');
+                }
+            }
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            // 4. FAQ Accordion Logic
+            const faqBtns = document.querySelectorAll('.faq-btn');
+            faqBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = btn.nextElementSibling;
+                    const icon = btn.querySelector('.faq-icon');
+                    const isOpen = content.style.maxHeight;
+
+                    // Close all others
+                    document.querySelectorAll('.faq-content').forEach(c => { c.style.maxHeight = null; });
+                    document.querySelectorAll('.faq-icon').forEach(i => { i.style.transform = 'rotate(0deg)'; });
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // 5. Interactive Terminal Typing Effect
+            const terminalCode = [
+                "<span class='text-brand-pink'>import</span> corvoso",
+                "",
+                "<span class='text-zinc-400'># Initialize the intelligence core</span>",
+                "agent = corvoso.Core(",
+                "    model=<span class='text-brand-violet'>'gpt-next'</span>,",
+                "    mode=<span class='text-brand-violet'>'autonomous'</span>",
+                ")",
+                "",
+                "<span class='text-zinc-400'># Start operations</span>",
+                "agent.deploy_infrastructure()",
+                "<span class='text-[#27c93f] mt-2 block'>[✓] Infrastructure deployed successfully in 12ms.</span>",
+                "<span class='text-[#27c93f] block'>[✓] Models loaded. Ready for input.</span>"
+            ];
+            
+            const terminalBody = document.getElementById('terminal-body');
+            let lineIndex = 0;
+            let charIndex = 0;
+            let currentLineText = "";
+            let isHtmlTag = false;
+            let terminalStarted = false;
+
+            function typeTerminal() {
+                if(!terminalBody) return;
+                
+                if (lineIndex < terminalCode.length) {
+                    const line = terminalCode[lineIndex];
+                    
+                    if (charIndex < line.length) {
+                        const char = line.charAt(charIndex);
+                        
+                        if(char === '<') isHtmlTag = true;
+                        currentLineText += char;
+                        charIndex++;
+                        if(char === '>') isHtmlTag = false;
+
+                        if(!isHtmlTag) {
+                            terminalBody.innerHTML = currentLineText + "<span class='animate-pulse text-brand-violet ml-1'>█</span>";
+                            setTimeout(typeTerminal, Math.random() * 30 + 10);
+                        } else {
+                            typeTerminal(); // Skip delays for HTML tags
+                        }
+                    } else {
+                        currentLineText += "<br/>";
+                        lineIndex++;
+                        charIndex = 0;
+                        terminalBody.innerHTML = currentLineText + "<span class='animate-pulse text-brand-violet ml-1'>█</span>";
+                        setTimeout(typeTerminal, 400); // pause at end of line
+                    }
+                } else {
+                    // Loop after a long pause
+                    setTimeout(() => {
+                        lineIndex = 0;
+                        charIndex = 0;
+                        currentLineText = "";
+                        terminalBody.innerHTML = "";
+                        typeTerminal();
+                    }, 8000);
+                }
+            }
+
+            const termObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !terminalStarted) {
+                        terminalStarted = true;
+                        setTimeout(typeTerminal, 500); // wait a bit after scroll reveal
+                    }
+                });
+            }, { threshold: 0.5 });
+            if(terminalBody) termObserver.observe(terminalBody);
+
+            // 6. Random Quotes Toast Logic
+            const quotes = [
+                { text: "Talk is cheap. Show me the code.", author: "Linus Torvalds" },
+                { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" },
+                { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+                { text: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" },
+                { text: "Make it work, make it right, make it fast.", author: "Kent Beck" },
+                { text: "The best error message is the one that never shows up.", author: "Thomas Fuchs" },
+                { text: "Experience is the name everyone gives to their mistakes.", author: "Oscar Wilde" },
+                { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" }
+            ];
+
+            const quoteToast = document.getElementById('quote-toast');
+            const quoteText = document.getElementById('quote-text');
+            const quoteAuthor = document.getElementById('quote-author');
+
+            function showRandomQuote() {
+                if(!quoteToast) return;
+                
+                const q = quotes[Math.floor(Math.random() * quotes.length)];
+                quoteText.innerText = "\"" + q.text + "\"";
+                quoteAuthor.innerText = "- " + q.author;
+                
+                // Fade in toast
+                quoteToast.classList.remove('opacity-0', 'translate-y-4');
+                quoteToast.classList.add('opacity-100', 'translate-y-0');
+
+                // Fade out after 7 seconds
+                setTimeout(() => {
+                    quoteToast.classList.remove('opacity-100', 'translate-y-0');
+                    quoteToast.classList.add('opacity-0', 'translate-y-4');
+                    
+                    // Trigger next quote in 5-15 seconds randomly
+                    const nextDelay = Math.random() * 10000 + 5000;
+                    setTimeout(showRandomQuote, nextDelay);
+                }, 7000);
+            }
+
+            // Start quotes after initial delay
+            setTimeout(showRandomQuote, 4000);
+
+            // 7. Interactive 3D WebGL Canvas Node Network
+            const canvas = document.getElementById('webgl-canvas');
+            if(canvas) {
+                const ctx = canvas.getContext('2d');
+                let width, height;
+                
+                function resizeNodeCanvas() {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                }
+                window.addEventListener('resize', resizeNodeCanvas);
+                resizeNodeCanvas();
+
+                const nodes = [];
+                const numNodes = window.innerWidth < 768 ? 40 : 100; // optimized for mobile
+                const connectionDistance = window.innerWidth < 768 ? 100 : 140;
+
+                for (let i = 0; i < numNodes; i++) {
+                    nodes.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        z: Math.random() * 2 - 1,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4
+                    });
+                }
+
+                let mouseX = width / 2;
+                let mouseY = height / 2;
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                });
+
+                function drawNodes() {
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    const isDark = document.documentElement.classList.contains('dark');
+                    const nodeColor = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)';
+                    const lineColor = isDark ? '255,255,255' : '0,0,0';
+
+                    for (let i = 0; i < numNodes; i++) {
+                        let p = nodes[i];
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.x < 0 || p.x > width) p.vx *= -1;
+                        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                        let depthParallaxX = (mouseX - width/2) * p.z * 0.03;
+                        let depthParallaxY = (mouseY - height/2) * p.z * 0.03;
+
+                        ctx.beginPath();
+                        ctx.arc(p.x + depthParallaxX, p.y + depthParallaxY, 1.5, 0, Math.PI * 2);
+                        ctx.fillStyle = nodeColor;
+                        ctx.fill();
+
+                        for (let j = i + 1; j < numNodes; j++) {
+                            let p2 = nodes[j];
+                            let pdx = (p.x + depthParallaxX) - (p2.x + ((mouseX - width/2) * p2.z * 0.03));
+                            let pdy = (p.y + depthParallaxY) - (p2.y + ((mouseY - height/2) * p2.z * 0.03));
+                            let dist = Math.sqrt(pdx * pdx + pdy * pdy);
+
+                            if (dist < connectionDistance) {
+                                ctx.beginPath();
+                                ctx.moveTo(p.x + depthParallaxX, p.y + depthParallaxY);
+                                ctx.lineTo(p2.x + ((mouseX - width/2) * p2.z * 0.03), p2.y + ((mouseY - height/2) * p2.z * 0.03));
+                                let opacity = 1 - (dist / connectionDistance);
+                                ctx.strokeStyle = `rgba(${lineColor}, ${opacity * 0.15})`;
+                                ctx.lineWidth = 1;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(drawNodes);
+                }
+                drawNodes();
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
